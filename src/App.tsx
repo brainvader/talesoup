@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useStoryStore } from '@/lib/store'
 import { sampleTales } from '@/lib/sampleData'
 import { TaleListPage } from '@/pages/TaleListPage'
@@ -10,9 +10,14 @@ import './App.css'
 
 export default function App() {
   const { addTale, tales, currentTaleId } = useStoryStore()
+  const initialized = useRef(false)
 
   // サンプルデータ投入（初回のみ）
   useEffect(() => {
+    // StrictModeの二重実行を防ぐ
+    if (initialized.current) return
+    initialized.current = true
+
     if (tales.length === 0) {
       sampleTales.forEach(addTale)
     }
