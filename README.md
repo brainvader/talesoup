@@ -39,6 +39,7 @@ npm run tauri:dev
 ```
 
 > **WSL2 note:** If the window fails to open, try:
+>
 > ```bash
 > WEBKIT_DISABLE_DMABUF_RENDERER=1 npx tauri dev
 > ```
@@ -47,15 +48,15 @@ npm run tauri:dev
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Desktop shell | Tauri 2 |
-| Frontend | React 18 + TypeScript + Vite |
-| Graph editor | @xyflow/react (React Flow) |
-| State management | Zustand |
-| Backend *(Sprint 2+)* | Rust / Axum |
-| Database *(Sprint 2+)* | PostgreSQL + pgvector |
-| AI *(Sprint 2+)* | Claude API (Tool Use) |
+| Layer                  | Technology                   |
+| ---------------------- | ---------------------------- |
+| Desktop shell          | Tauri 2                      |
+| Frontend               | React 18 + TypeScript + Vite |
+| Graph editor           | @xyflow/react (React Flow)   |
+| State management       | Zustand                      |
+| Backend _(Sprint 2+)_  | Rust / Axum                  |
+| Database _(Sprint 2+)_ | PostgreSQL + pgvector        |
+| AI _(Sprint 2+)_       | Claude API (Tool Use)        |
 
 ---
 
@@ -130,6 +131,7 @@ Launch
 ## Sprint Plan
 
 ### Sprint 1 — Graph manual editing ✅
+
 - [x] Tale list screen
 - [x] New tale creation modal
 - [x] React Flow graph canvas
@@ -141,12 +143,14 @@ Launch
 - [ ] Manual node add / edit form
 
 ### Sprint 2 — Chat input → graph update
+
 - [ ] Backend (Axum + PostgreSQL)
 - [ ] Claude API Tool Use integration
 - [ ] Text input → graph reflection
 - [ ] ChoiceRecord persistence
 
 ### Sprint 3 — AI as story assistant
+
 - [ ] Twist suggestion
 - [ ] Foreshadowing suggestion
 - [ ] Scene generation (Sonnet)
@@ -154,6 +158,7 @@ Launch
 - [ ] AI suggestion accept/reject UI
 
 ### Sprint 4 — Research foundation
+
 - [ ] TwistPattern library accumulation
 - [ ] ChoiceRecord analytics
 - [ ] Neo4j integration (experimental analysis)
