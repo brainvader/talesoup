@@ -1,0 +1,56 @@
+.menu {
+  background: var(--ts-bg);
+  border: 0.5px solid var(--ts-border);
+  border-radius: 10px;
+  padding: 4px;
+  min-width: 160px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  animation: appear 0.1s ease;
+}
+
+@keyframes appear {
+  from { opacity: 0; transform: scale(0.96) translateY(-4px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0); }
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 10px;
+  font-size: 13px;
+  color: var(--ts-text);
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: background 0.1s;
+}
+
+.item:hover {
+  background: var(--ts-surface);
+}
+
+.danger {
+  color: #D85A30;
+}
+
+.danger:hover {
+  background: #FAECE7;
+}
+
+.icon {
+  font-size: 14px;
+  width: 16px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.divider {
+  height: 0.5px;
+  background: var(--ts-border);
+  margin: 4px 6px;
+}
