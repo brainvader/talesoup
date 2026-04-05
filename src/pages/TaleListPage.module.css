@@ -1,0 +1,106 @@
+.page {
+  min-height: 100vh;
+  background: var(--ts-surface);
+  padding: 40px 48px;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 40px;
+}
+
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logoDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #1D9E75;
+}
+
+.logoText {
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--ts-text);
+  letter-spacing: -0.03em;
+}
+
+.tagline {
+  font-size: 13px;
+  color: var(--ts-muted);
+  max-width: 400px;
+  line-height: 1.6;
+}
+
+.newBtn {
+  background: #0F6E56;
+  color: #E1F5EE;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+.newBtn:hover { background: #085041; }
+
+/* グリッド */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+/* 空状態 */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 80px 0;
+}
+
+.emptyIcon {
+  font-size: 32px;
+  color: var(--ts-muted);
+}
+
+.emptyTitle {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ts-text);
+}
+
+.emptyDesc {
+  font-size: 13px;
+  color: var(--ts-muted);
+}
+
+.emptyBtn {
+  margin-top: 8px;
+  background: #0F6E56;
+  color: #E1F5EE;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 20px;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.emptyBtn:hover { background: #085041; }

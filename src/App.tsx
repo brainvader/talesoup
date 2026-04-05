@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useStoryStore } from '@/lib/store'
 import { sampleTales } from '@/lib/sampleData'
+import { TaleListPage } from '@/pages/TaleListPage'
 import { GraphCanvas } from '@/components/graph/GraphCanvas'
 import { DetailPanel } from '@/components/detail/DetailPanel'
 import { ChatPanel } from '@/components/chat/ChatPanel'
@@ -8,22 +9,22 @@ import { TopBar } from '@/components/layout/TopBar'
 import './App.css'
 
 export default function App() {
-  const { addTale, openTale, openScene, tales } = useStoryStore()
+  const { addTale, tales, currentTaleId } = useStoryStore()
 
+  // サンプルデータ投入（初回のみ）
   useEffect(() => {
-    // サンプルデータ投入（初回のみ）
     if (tales.length === 0) {
       sampleTales.forEach(addTale)
-      // 最初のTaleとSceneを自動で開く（Sprint 1: 簡易動作確認）
-      const first = sampleTales[0]
-      openTale(first.id)
-      if (first.scenes.length > 0) {
-        openScene(first.scenes[0].id)
-      }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // currentTaleId がなければホーム画面（Tale一覧）を表示
+  if (!currentTaleId) {
+    return <TaleListPage />
+  }
+
+  // Tale が開かれていればエディタ画面を表示
   return (
     <div className="app">
       <TopBar />

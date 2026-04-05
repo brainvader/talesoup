@@ -9,7 +9,7 @@ const STATUS_LABEL: Record<string, string> = {
 }
 
 export function TopBar() {
-  const { currentTale, currentScene, tales, openTale, openScene, closeScene } = useStoryStore()
+  const { currentTale, currentScene, tales, openTale, openScene, closeTale } = useStoryStore()
   const tale = currentTale()
   const scene = currentScene()
 
@@ -17,25 +17,28 @@ export function TopBar() {
     <header className={styles.bar}>
       <div className={styles.left}>
         <div className={styles.dot} />
-        <span className={styles.title}>TaleSoup</span>
 
-        {/* パンくず: Tale名 */}
+        {/* TaleSoup → 一覧に戻るボタン（Tale表示中のみ） */}
+        {tale ? (
+          <button className={styles.breadcrumb} onClick={() => closeTale()}>
+            TaleSoup
+          </button>
+        ) : (
+          <span className={styles.title}>TaleSoup</span>
+        )}
+
+        {/* パンくず: Tale名（現在地・クリック不要） */}
         {tale && (
           <>
             <span className={styles.sep}>/</span>
-            <button
-              className={styles.breadcrumb}
-              onClick={() => closeScene()}
-            >
-              {tale.title}
-            </button>
+            <span className={styles.breadcrumbCurrent}>{tale.title}</span>
             <span className={styles.statusBadge}>
               {STATUS_LABEL[tale.status] ?? tale.status}
             </span>
           </>
         )}
 
-        {/* パンくず: Scene名 */}
+        {/* パンくず: Scene名（現在地） */}
         {scene && (
           <>
             <span className={styles.sep}>/</span>
@@ -44,7 +47,7 @@ export function TopBar() {
         )}
       </div>
 
-      {/* Scene切替 */}
+      {/* Scene切替タブ */}
       {tale && tale.scenes.length > 0 && (
         <div className={styles.sceneTabs}>
           {tale.scenes.map((sc) => (
@@ -60,7 +63,6 @@ export function TopBar() {
       )}
 
       <div className={styles.right}>
-        {/* Tale未選択時はTale一覧から選べるセレクタ */}
         {!tale && tales.length > 0 && (
           <select
             className={styles.taleSelect}
