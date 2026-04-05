@@ -10,4 +10,5 @@ src-tauri/target
 src-tauri/gen
 
 # Patch files
+patches
 *.patch
