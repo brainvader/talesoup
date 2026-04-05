@@ -8,3 +8,6 @@ dist
 # Rust / Tauri
 src-tauri/target
 src-tauri/gen
+
+# Patch files
+*.patch
