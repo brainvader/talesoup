@@ -1,0 +1,124 @@
+.bar {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 16px;
+  background: var(--ts-bg);
+  border-bottom: 0.5px solid var(--ts-border);
+  gap: 12px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #1D9E75;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ts-text);
+  letter-spacing: -0.02em;
+}
+
+.sep {
+  font-size: 13px;
+  color: var(--ts-muted);
+}
+
+.breadcrumb {
+  font-size: 13px;
+  color: var(--ts-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-family: inherit;
+  transition: color 0.15s;
+}
+.breadcrumb:hover { color: var(--ts-text); }
+
+.breadcrumbCurrent {
+  font-size: 13px;
+  color: var(--ts-text);
+  font-weight: 500;
+}
+
+.statusBadge {
+  font-size: 10px;
+  color: #0F6E56;
+  background: #E1F5EE;
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+
+/* Scene切替タブ */
+.sceneTabs {
+  display: flex;
+  gap: 2px;
+  flex: 1;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.sceneTabs::-webkit-scrollbar { display: none; }
+
+.sceneTab {
+  font-size: 11px;
+  color: var(--ts-muted);
+  background: none;
+  border: 0.5px solid transparent;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+  transition: color 0.15s, border-color 0.15s;
+}
+.sceneTab:hover {
+  color: var(--ts-text);
+  border-color: var(--ts-border);
+}
+.sceneTabActive {
+  color: var(--ts-text);
+  background: var(--ts-surface);
+  border-color: var(--ts-border);
+  font-weight: 500;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.taleSelect {
+  font-size: 12px;
+  color: var(--ts-text);
+  background: var(--ts-surface);
+  border: 0.5px solid var(--ts-border);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.sprint {
+  font-size: 11px;
+  color: var(--ts-muted);
+  border: 0.5px solid var(--ts-border);
+  padding: 3px 8px;
+  border-radius: 6px;
+}

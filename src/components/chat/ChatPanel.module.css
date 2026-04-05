@@ -1,0 +1,122 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  background: var(--ts-bg);
+  border-top: 0.5px solid var(--ts-border);
+  max-height: 240px;
+}
+
+.history {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 16px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 120px;
+}
+
+.msg {
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 6px 10px;
+  border-radius: 8px;
+  max-width: 90%;
+}
+
+.msgUser {
+  background: #E1F5EE;
+  color: #085041;
+  align-self: flex-end;
+}
+
+.msgAssistant {
+  background: #F1EFE8;
+  color: #444441;
+  align-self: flex-start;
+}
+
+.thinking {
+  opacity: 0.6;
+  font-style: italic;
+}
+
+.suggestions {
+  display: flex;
+  gap: 6px;
+  padding: 8px 16px 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-shrink: 0;
+}
+
+.suggestions::-webkit-scrollbar { display: none; }
+
+.chip {
+  white-space: nowrap;
+  font-size: 11px;
+  color: var(--ts-secondary);
+  background: transparent;
+  border: 0.5px solid var(--ts-border);
+  padding: 4px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+  font-family: inherit;
+}
+
+.chip:hover {
+  border-color: var(--ts-text);
+  color: var(--ts-text);
+}
+
+.inputRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 8px 16px 12px;
+  flex-shrink: 0;
+}
+
+.inputWrap {
+  flex: 1;
+  background: var(--ts-surface);
+  border: 0.5px solid var(--ts-border);
+  border-radius: 10px;
+  padding: 8px 12px;
+  transition: border-color 0.15s;
+}
+
+.inputWrap:focus-within {
+  border-color: #1D9E75;
+}
+
+.input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 13px;
+  color: var(--ts-text);
+  font-family: inherit;
+  resize: none;
+  line-height: 1.5;
+}
+
+.input::placeholder { color: var(--ts-muted); }
+
+.sendBtn {
+  background: #0F6E56;
+  color: #E1F5EE;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+.sendBtn:hover:not(:disabled) { background: #085041; }
+.sendBtn:disabled { opacity: 0.4; cursor: not-allowed; }

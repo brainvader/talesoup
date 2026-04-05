@@ -1,0 +1,99 @@
+/* CSS変数 */
+:root {
+  --ts-bg:      #ffffff;
+  --ts-surface: #F1EFE8;
+  --ts-border:  rgba(44, 44, 42, 0.12);
+  --ts-text:    #2C2C2A;
+  --ts-secondary: #444441;
+  --ts-muted:   #888780;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ts-bg:      #1e1e1c;
+    --ts-surface: #2C2C2A;
+    --ts-border:  rgba(241, 239, 232, 0.1);
+    --ts-text:    #F1EFE8;
+    --ts-secondary: #D3D1C7;
+    --ts-muted:   #5F5E5A;
+  }
+}
+
+/* リセット */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic UI',
+    sans-serif;
+  background: var(--ts-surface);
+  color: var(--ts-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* アプリレイアウト */
+.app {
+  display: grid;
+  grid-template-rows: 48px 1fr auto;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.main {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.canvas-area {
+  overflow: hidden;
+  background: var(--ts-surface);
+}
+
+.detail-area {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.chat-area {
+  background: var(--ts-bg);
+}
+
+/* React Flow のデフォルトスタイル上書き */
+.react-flow__controls {
+  border: 0.5px solid var(--ts-border) !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+  box-shadow: none !important;
+}
+
+.react-flow__controls-button {
+  background: var(--ts-bg) !important;
+  border-bottom-color: var(--ts-border) !important;
+  fill: var(--ts-muted) !important;
+}
+
+.react-flow__controls-button:hover {
+  background: var(--ts-surface) !important;
+}
+
+.react-flow__minimap {
+  border: 0.5px solid var(--ts-border) !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+}
+
+.react-flow__edge-label {
+  font-size: 11px;
+  fill: var(--ts-muted);
+}
+
+/* スクロールバー */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--ts-border); border-radius: 2px; }
