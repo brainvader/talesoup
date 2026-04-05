@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   ReactFlow,
   Background,
@@ -17,22 +17,30 @@ import '@xyflow/react/dist/style.css'
 import { useStoryStore } from '@/lib/store'
 import { entitiesToNodes, relationshipsToEdges } from '@/lib/graphUtils'
 import { EntityNode } from './EntityNode'
-import type { Entity } from '@/types'
+import { ContextMenu, type ContextMenuItem } from './ContextMenu'
+import type { Entity, EntityType } from '@/types'
 
 const nodeTypes: NodeTypes = { entityNode: EntityNode as NodeTypes[string] }
+
+interface MenuState {
+  x: number
+  y: number
+  items: ContextMenuItem[]
+}
 
 export function GraphCanvas() {
   const {
     currentTale,
     currentScene,
     addRelationship,
+    addEntity,
+    removeEntity,
     selectEntity,
   } = useStoryStore()
 
   const tale = currentTale()
   const scene = currentScene()
 
-  // Sceneが選択されていればそのEntityのみ、なければTale全体のEntityを表示
   const visibleEntities = tale
     ? scene
       ? tale.entities.filter((e) => scene.entityIds.includes(e.id))
@@ -42,10 +50,10 @@ export function GraphCanvas() {
   const visibleRelationships = tale
     ? scene
       ? tale.relationships.filter(
-          (r) =>
-            scene.entityIds.includes(r.fromId) &&
-            scene.entityIds.includes(r.toId)
-        )
+        (r) =>
+          scene.entityIds.includes(r.fromId) &&
+          scene.entityIds.includes(r.toId)
+      )
       : tale.relationships
     : []
 
@@ -55,15 +63,16 @@ export function GraphCanvas() {
   const [edges, setEdges, onEdgesChange] = useEdgesState(
     relationshipsToEdges(visibleRelationships)
   )
+  const [menu, setMenu] = useState<MenuState | null>(null)
 
   useEffect(() => {
     setNodes(entitiesToNodes(visibleEntities))
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tale?.entities, scene?.entityIds])
 
   useEffect(() => {
     setEdges(relationshipsToEdges(visibleRelationships))
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tale?.relationships, scene?.entityIds])
 
   const onConnect = useCallback(
@@ -91,44 +100,155 @@ export function GraphCanvas() {
 
   const onPaneClick = useCallback(() => {
     selectEntity(null)
+    setMenu(null)
   }, [selectEntity])
 
-  return (
-    <ReactFlow
-      nodes={nodes}
-      edges={edges}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      onConnect={onConnect}
-      onNodeClick={onNodeClick}
-      onPaneClick={onPaneClick}
-      nodeTypes={nodeTypes}
-      fitView
-      fitViewOptions={{ padding: 0.2 }}
-      minZoom={0.3}
-      maxZoom={2}
-      defaultEdgeOptions={{
-        animated: false,
-        style: { stroke: '#B4B2A9', strokeWidth: 1.5 },
-      }}
-    >
-      <Background variant={BackgroundVariant.Dots} gap={24} size={1} color="#D3D1C7" />
-      <Controls showInteractive={false} />
-      <MiniMap
-        nodeColor={(node) => {
-          const entity = (node.data as { entity?: Entity })?.entity
-          const colors: Record<string, string> = {
-            CHARACTER:    '#1D9E75',
-            PLACE:        '#7F77DD',
-            ORGANIZATION: '#378ADD',
-            ITEM:         '#FAC775',
-            EVENT:        '#D85A30',
-          }
-          return colors[entity?.type ?? ''] ?? '#B4B2A9'
-        }}
-        maskColor="rgba(241,239,232,0.6)"
-        style={{ background: '#F1EFE8', border: '0.5px solid #D3D1C7' }}
-      />
-    </ReactFlow>
+  // ノード右クリック → 編集・削除メニュー
+  const onNodeContextMenu = useCallback(
+    (e: React.MouseEvent, node: Node) => {
+      e.preventDefault()
+      const entity = tale?.entities.find((en) => en.id === node.id)
+      if (!entity) return
+
+      setMenu({
+        x: e.clientX,
+        y: e.clientY,
+        items: [
+          {
+            label: entity.name,
+            icon: '◎',
+            onClick: () => selectEntity(entity.id),
+          },
+          { divider: true },
+          {
+            label: '詳細を表示',
+            icon: '→',
+            onClick: () => selectEntity(entity.id),
+          },
+          {
+            label: '削除',
+            icon: '×',
+            danger: true,
+            onClick: () => {
+              removeEntity(entity.id)
+              selectEntity(null)
+            },
+          },
+        ],
+      })
+    },
+    [tale, selectEntity, removeEntity]
   )
+
+  // 背景右クリック → エンティティ追加メニュー
+  const onPaneContextMenu = useCallback(
+    (e: React.MouseEvent | MouseEvent) => {
+      e.preventDefault()
+
+      const createEntity = (type: EntityType) => {
+        const name = prompt(
+          `${TYPE_LABEL[type]}の名前を入力してください:`
+        )
+        if (!name?.trim()) return
+        const entity: Entity = {
+          id: `entity-${Date.now()}`,
+          name: name.trim(),
+          type,
+          role: '',
+          personality: '',
+          tags: [],
+          alive: type === 'CHARACTER' ? true : undefined,
+        }
+        addEntity(entity)
+      }
+
+      setMenu({
+        x: e.clientX,
+        y: e.clientY,
+        items: [
+          {
+            label: 'キャラクターを追加',
+            icon: '人',
+            onClick: () => createEntity('CHARACTER'),
+          },
+          {
+            label: '場所を追加',
+            icon: '◇',
+            onClick: () => createEntity('PLACE'),
+          },
+          {
+            label: '組織を追加',
+            icon: '◈',
+            onClick: () => createEntity('ORGANIZATION'),
+          },
+          {
+            label: 'アイテムを追加',
+            icon: '◆',
+            onClick: () => createEntity('ITEM'),
+          },
+        ],
+      })
+    },
+    [addEntity]
+  )
+
+  return (
+    <>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        onNodeClick={onNodeClick}
+        onPaneClick={onPaneClick}
+        onNodeContextMenu={onNodeContextMenu}
+        onPaneContextMenu={onPaneContextMenu}
+        nodeTypes={nodeTypes}
+        fitView
+        fitViewOptions={{ padding: 0.2 }}
+        minZoom={0.3}
+        maxZoom={2}
+        defaultEdgeOptions={{
+          animated: false,
+          style: { stroke: '#B4B2A9', strokeWidth: 1.5 },
+        }}
+      >
+        <Background variant={BackgroundVariant.Dots} gap={24} size={1} color="#D3D1C7" />
+        <Controls showInteractive={false} />
+        <MiniMap
+          nodeColor={(node) => {
+            const entity = (node.data as { entity?: Entity })?.entity
+            const colors: Record<string, string> = {
+              CHARACTER: '#1D9E75',
+              PLACE: '#7F77DD',
+              ORGANIZATION: '#378ADD',
+              ITEM: '#FAC775',
+              EVENT: '#D85A30',
+            }
+            return colors[entity?.type ?? ''] ?? '#B4B2A9'
+          }}
+          maskColor="rgba(241,239,232,0.6)"
+          style={{ background: '#F1EFE8', border: '0.5px solid #D3D1C7' }}
+        />
+      </ReactFlow>
+
+      {menu && (
+        <ContextMenu
+          x={menu.x}
+          y={menu.y}
+          items={menu.items}
+          onClose={() => setMenu(null)}
+        />
+      )}
+    </>
+  )
+}
+
+const TYPE_LABEL: Record<EntityType, string> = {
+  CHARACTER: 'キャラクター',
+  PLACE: '場所',
+  ORGANIZATION: '組織',
+  ITEM: 'アイテム',
+  EVENT: '出来事',
 }
