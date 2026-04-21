@@ -69,6 +69,8 @@ interface TaleSoupState {
   // -------------------------------------------------------
   selectedEntityId: string | null
   selectEntity: (id: string | null) => void
+  selectedRelationshipId: string | null
+  selectRelationship: (id: string | null) => void
 
   // -------------------------------------------------------
   // チャット
@@ -129,11 +131,11 @@ export const useStoryStore = create<TaleSoupState>((set, get) => ({
       tales: s.tales.map((t) =>
         t.id === s.currentTaleId
           ? {
-              ...t,
-              entities: t.entities.map((e) =>
-                e.id === id ? { ...e, ...patch } : e
-              ),
-            }
+            ...t,
+            entities: t.entities.map((e) =>
+              e.id === id ? { ...e, ...patch } : e
+            ),
+          }
           : t
       ),
     })),
@@ -142,12 +144,12 @@ export const useStoryStore = create<TaleSoupState>((set, get) => ({
       tales: s.tales.map((t) =>
         t.id === s.currentTaleId
           ? {
-              ...t,
-              entities: t.entities.filter((e) => e.id !== id),
-              relationships: t.relationships.filter(
-                (r) => r.fromId !== id && r.toId !== id
-              ),
-            }
+            ...t,
+            entities: t.entities.filter((e) => e.id !== id),
+            relationships: t.relationships.filter(
+              (r) => r.fromId !== id && r.toId !== id
+            ),
+          }
           : t
       ),
     })),
@@ -166,9 +168,9 @@ export const useStoryStore = create<TaleSoupState>((set, get) => ({
       tales: s.tales.map((t) =>
         t.id === s.currentTaleId
           ? {
-              ...t,
-              relationships: t.relationships.filter((r) => r.id !== id),
-            }
+            ...t,
+            relationships: t.relationships.filter((r) => r.id !== id),
+          }
           : t
       ),
     })),
@@ -187,11 +189,11 @@ export const useStoryStore = create<TaleSoupState>((set, get) => ({
       tales: s.tales.map((t) =>
         t.id === s.currentTaleId
           ? {
-              ...t,
-              scenes: t.scenes.map((sc) =>
-                sc.id === id ? { ...sc, ...patch } : sc
-              ),
-            }
+            ...t,
+            scenes: t.scenes.map((sc) =>
+              sc.id === id ? { ...sc, ...patch } : sc
+            ),
+          }
           : t
       ),
     })),
@@ -210,13 +212,13 @@ export const useStoryStore = create<TaleSoupState>((set, get) => ({
       tales: s.tales.map((t) =>
         t.id === s.currentTaleId
           ? {
-              ...t,
-              scenes: t.scenes.map((sc) =>
-                sc.id === event.sceneId
-                  ? { ...sc, events: [...sc.events, event] }
-                  : sc
-              ),
-            }
+            ...t,
+            scenes: t.scenes.map((sc) =>
+              sc.id === event.sceneId
+                ? { ...sc, events: [...sc.events, event] }
+                : sc
+            ),
+          }
           : t
       ),
     })),
@@ -234,6 +236,8 @@ export const useStoryStore = create<TaleSoupState>((set, get) => ({
   // 選択状態
   selectedEntityId: null,
   selectEntity: (id) => set({ selectedEntityId: id }),
+  selectedRelationshipId: null,
+  selectRelationship: (id) => set({ selectedRelationshipId: id }),
 
   // チャット
   messages: [],

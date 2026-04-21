@@ -11,6 +11,7 @@ import {
   type Connection,
   type NodeTypes,
   type Node,
+  type Edge,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 
@@ -18,9 +19,19 @@ import { useStoryStore } from '@/lib/store'
 import { entitiesToNodes, relationshipsToEdges } from '@/lib/graphUtils'
 import { EntityNode } from './EntityNode'
 import { ContextMenu, type ContextMenuItem } from './ContextMenu'
-import type { Entity, EntityType } from '@/types'
+import type { Entity, EntityType, RelationType } from '@/types'
 
 const nodeTypes: NodeTypes = { entityNode: EntityNode as NodeTypes[string] }
+
+const REL_TYPES: { type: RelationType; label: string }[] = [
+  { type: 'ALLY', label: '仲間' },
+  { type: 'ENEMY', label: '対立' },
+  { type: 'FAMILY', label: '家族' },
+  { type: 'CONTROLS', label: '支配' },
+  { type: 'BELONGS', label: '所属' },
+  { type: 'PAST', label: '過去' },
+  { type: 'NEUTRAL', label: '中立' },
+]
 
 interface MenuState {
   x: number
@@ -33,9 +44,11 @@ export function GraphCanvas() {
     currentTale,
     currentScene,
     addRelationship,
+    removeRelationship,
     addEntity,
     removeEntity,
     selectEntity,
+    selectRelationship,
   } = useStoryStore()
 
   const tale = currentTale()
@@ -94,16 +107,18 @@ export function GraphCanvas() {
   const onNodeClick = useCallback(
     (_: React.MouseEvent, node: Node) => {
       selectEntity(node.id)
+      selectRelationship(null)
     },
-    [selectEntity]
+    [selectEntity, selectRelationship]
   )
 
   const onPaneClick = useCallback(() => {
     selectEntity(null)
+    selectRelationship(null)
     setMenu(null)
-  }, [selectEntity])
+  }, [selectEntity, selectRelationship])
 
-  // ノード右クリック → 編集・削除メニュー
+  // ノード右クリック
   const onNodeContextMenu = useCallback(
     (e: React.MouseEvent, node: Node) => {
       e.preventDefault()
@@ -114,16 +129,15 @@ export function GraphCanvas() {
         x: e.clientX,
         y: e.clientY,
         items: [
-          {
-            label: entity.name,
-            icon: '◎',
-            onClick: () => selectEntity(entity.id),
-          },
+          { label: entity.name, icon: '◎' },
           { divider: true },
           {
             label: '詳細を表示',
             icon: '→',
-            onClick: () => selectEntity(entity.id),
+            onClick: () => {
+              selectEntity(entity.id)
+              selectRelationship(null)
+            },
           },
           {
             label: '削除',
@@ -137,18 +151,69 @@ export function GraphCanvas() {
         ],
       })
     },
-    [tale, selectEntity, removeEntity]
+    [tale, selectEntity, selectRelationship, removeEntity]
   )
 
-  // 背景右クリック → エンティティ追加メニュー
+  // エッジ右クリック
+  const onEdgeContextMenu = useCallback(
+    (e: React.MouseEvent, edge: Edge) => {
+      e.preventDefault()
+      const rel = tale?.relationships.find((r) => r.id === edge.id)
+      if (!rel) return
+
+      const fromEntity = tale?.entities.find((en) => en.id === rel.fromId)
+      const toEntity = tale?.entities.find((en) => en.id === rel.toId)
+      const label = `${fromEntity?.name ?? '?'} → ${toEntity?.name ?? '?'}`
+
+      setMenu({
+        x: e.clientX,
+        y: e.clientY,
+        items: [
+          { label, icon: '─' },
+          { divider: true },
+          // 関係種別の変更
+          ...REL_TYPES.map((rt) => ({
+            label: `${rt.label}に変更`,
+            icon: rel.type === rt.type ? '✓' : ' ',
+            onClick: () => {
+              // storeのupdateRelationshipを使って変更
+              // 現状はremove→addで対応
+              removeRelationship(rel.id)
+              addRelationship({ ...rel, type: rt.type, label: rt.label })
+              selectRelationship(rel.id)
+            },
+          })),
+          { divider: true },
+          {
+            label: '詳細を表示',
+            icon: '→',
+            onClick: () => {
+              selectRelationship(rel.id)
+              selectEntity(null)
+            },
+          },
+          {
+            label: '削除',
+            icon: '×',
+            danger: true,
+            onClick: () => {
+              removeRelationship(rel.id)
+              selectRelationship(null)
+            },
+          },
+        ],
+      })
+    },
+    [tale, addRelationship, removeRelationship, selectEntity, selectRelationship]
+  )
+
+  // 背景右クリック
   const onPaneContextMenu = useCallback(
     (e: React.MouseEvent | MouseEvent) => {
       e.preventDefault()
 
       const createEntity = (type: EntityType) => {
-        const name = prompt(
-          `${TYPE_LABEL[type]}の名前を入力してください:`
-        )
+        const name = prompt(`${TYPE_LABEL[type]}の名前を入力してください:`)
         if (!name?.trim()) return
         const entity: Entity = {
           id: `entity-${Date.now()}`,
@@ -166,26 +231,10 @@ export function GraphCanvas() {
         x: e.clientX,
         y: e.clientY,
         items: [
-          {
-            label: 'キャラクターを追加',
-            icon: '人',
-            onClick: () => createEntity('CHARACTER'),
-          },
-          {
-            label: '場所を追加',
-            icon: '◇',
-            onClick: () => createEntity('PLACE'),
-          },
-          {
-            label: '組織を追加',
-            icon: '◈',
-            onClick: () => createEntity('ORGANIZATION'),
-          },
-          {
-            label: 'アイテムを追加',
-            icon: '◆',
-            onClick: () => createEntity('ITEM'),
-          },
+          { label: 'キャラクターを追加', icon: '人', onClick: () => createEntity('CHARACTER') },
+          { label: '場所を追加', icon: '◇', onClick: () => createEntity('PLACE') },
+          { label: '組織を追加', icon: '◈', onClick: () => createEntity('ORGANIZATION') },
+          { label: 'アイテムを追加', icon: '◆', onClick: () => createEntity('ITEM') },
         ],
       })
     },
@@ -203,6 +252,7 @@ export function GraphCanvas() {
         onNodeClick={onNodeClick}
         onPaneClick={onPaneClick}
         onNodeContextMenu={onNodeContextMenu}
+        onEdgeContextMenu={onEdgeContextMenu}
         onPaneContextMenu={onPaneContextMenu}
         nodeTypes={nodeTypes}
         fitView
